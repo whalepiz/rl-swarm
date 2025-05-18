@@ -29,20 +29,8 @@ class TestnetGRPORunner(GRPORunner):
     def __init__(self, coordinator: SwarmCoordinator) -> None:
         self.coordinator = coordinator
 
-#    def get_initial_peers(self) -> list[str]:
-#       return self.coordinator.get_bootnodes()
     def get_initial_peers(self) -> list[str]:
-    # 1
-        if not getattr(self, 'force_chain_lookup', True):
-            return []
-
-    # 2
-        peers = self.coordinator.get_bootnodes()
-        logger.info(f"Bootnodes from chain: {peers}")
-
-    # 3
-        alive_peers = [p for p in peers if not p.startswith('/ip4/38.101.215.14')]
-        return alive_peers if alive_peers else []
+        return self.coordinator.get_bootnodes()
 
     def register_peer(self, peer_id):
         logger.info(f"Registering self with peer ID: {peer_id}")
