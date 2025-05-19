@@ -563,6 +563,7 @@ fi
 
 echo -e "${CYAN}${BOLD}[✓] Setting up Python virtual environment...${NC}"
 python3 -m venv .venv && . .venv/bin/activate && \
+pip install --upgrade torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu \
 echo -e "${GREEN}${BOLD}[✓] Python virtual environment set up successfully.${NC}" || \
 echo -e "${RED}${BOLD}[✗] Failed to set up virtual environment.${NC}"
 
