@@ -19,6 +19,9 @@ export ORG_ID
 export HF_HUB_DOWNLOAD_TIMEOUT=120
 export TUNNEL_TYPE=""
 export CPU_ONLY=true  # Luôn chạy ở chế độ CPU
+export OMP_NUM_THREADS=36           # Giới hạn luồng OpenMP = 36 (tổng core vật lý)
+export MKL_NUM_THREADS=36           # Tối ưu Intel MKL cho 36 cores
+export NUMEXPR_NUM_THREADS=36       # Tối ưu NumExpr (nếu dùng thư viện này)
 
 DEFAULT_PUB_MULTI_ADDRS=""
 PUB_MULTI_ADDRS=${PUB_MULTI_ADDRS:-$DEFAULT_PUB_MULTI_ADDRS}
@@ -591,7 +594,7 @@ echo -e "\n${GREEN}${BOLD}[✓] Good luck in the swarm! Your training session is
 [ "$(uname)" = "Darwin" ] && sed -i '' -E 's/(startup_timeout: *float *= *)[0-9.]+/\1120/' $(python3 -c "import hivemind.p2p.p2p_daemon as m; print(m.__file__)") || sed -i -E 's/(startup_timeout: *float *= *)[0-9.]+/\1120/' $(python3 -c "import hivemind.p2p.p2p_daemon as m; print(m.__file__)")
 [ "$(uname)" = "Darwin" ] && sed -i '' -e '/bootstrap_timeout: Optional\[float\] = None/s//bootstrap_timeout: float = 120/' $(python3 -c 'import hivemind.dht.node as m; print(m.__file__)') || sed -i -e '/bootstrap_timeout: Optional\[float\] = None/s//bootstrap_timeout: float = 120/' $(python3 -c 'import hivemind.dht.node as m; print(m.__file__)')
 if [ -n "$ORG_ID" ]; then
-    python -m hivemind_exp.gsm8k.train_single_gpu \
+    numactl --cpunodebind=0,1 --interleave=all python -m hivemind_exp.gsm8k.train_single_gpu \
         --hf_token "$HUGGINGFACE_ACCESS_TOKEN" \
         --identity_path "$IDENTITY_PATH" \
         --modal_org_id "$ORG_ID" \
@@ -599,7 +602,7 @@ if [ -n "$ORG_ID" ]; then
         --config "$CONFIG_PATH" \
         --game "$GAME"
 else
-    python -m hivemind_exp.gsm8k.train_single_gpu \
+    numactl --cpunodebind=0,1 --interleave=all python -m hivemind_exp.gsm8k.train_single_gpu \
         --hf_token "$HUGGINGFACE_ACCESS_TOKEN" \
         --identity_path "$IDENTITY_PATH" \
         --public_maddr "$PUB_MULTI_ADDRS" \
