@@ -23,7 +23,8 @@ export CPU_ONLY=true  # Luôn chạy ở chế độ CPU
 DEFAULT_PUB_MULTI_ADDRS=""
 PUB_MULTI_ADDRS=${PUB_MULTI_ADDRS:-$DEFAULT_PUB_MULTI_ADDRS}
 
-DEFAULT_PEER_MULTI_ADDRS="/ip4/38.101.215.13/tcp/30002/p2p/QmQ2gEXoPJg6iMBSUFWGzAabS2VhnzuS782Y637hGjfsRJ"
+DEFAULT_PEER_MULTI_ADDRS=""
+#DEFAULT_PEER_MULTI_ADDRS="/ip4/38.101.215.13/tcp/30002/p2p/QmQ2gEXoPJg6iMBSUFWGzAabS2VhnzuS782Y637hGjfsRJ"
 PEER_MULTI_ADDRS=${PEER_MULTI_ADDRS:-$DEFAULT_PEER_MULTI_ADDRS}
 
 DEFAULT_HOST_MULTI_ADDRS="/ip4/0.0.0.0/tcp/38331"
@@ -297,10 +298,10 @@ else
             return 0
         fi
         echo -e "\n${YELLOW}${BOLD}[✓] Installing cloudflared...${NC}"
-        CF_URL="https://github.com/cloudflare/cloudflared/releases/latest//cloudflared-linux-$CF_ARCH"
+        CF_URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-$CF_ARCH"
         wget -q --show-progress "$CF_URL" -O cloudflared
         if [ $? -ne 0 ]; then
-            echo -e "${RED}${BOLD}[✗] Failed to  cloudflared.${NC}"
+            echo -e "${RED}${BOLD}[✗] Failed to download cloudflared.${NC}"
             return 1
         fi
         chmod +x cloudflared
@@ -322,7 +323,7 @@ else
         NGROK_URL="https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-$OS-$NGROK_ARCH.tgz"
         wget -q --show-progress "$NGROK_URL" -O ngrok.tgz
         if [ $? -ne 0 ]; then
-            echo -e "${RED}${BOLD}[✗] Failed to  ngrok.${NC}"
+            echo -e "${RED}${BOLD}[✗] Failed to download ngrok.${NC}"
             return 1
         fi
         tar -xzf ngrok.tgz
@@ -563,8 +564,6 @@ fi
 
 echo -e "${CYAN}${BOLD}[✓] Setting up Python virtual environment...${NC}"
 python3 -m venv .venv && . .venv/bin/activate && \
-pip install --upgrade pip && \
-pip install --upgrade torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu && \
 echo -e "${GREEN}${BOLD}[✓] Python virtual environment set up successfully.${NC}" || \
 echo -e "${RED}${BOLD}[✗] Failed to set up virtual environment.${NC}"
 
